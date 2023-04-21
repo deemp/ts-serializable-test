@@ -69,8 +69,11 @@ test-suite conversions
       base >=4.7 && <5
     , breakpoint
     , hedgehog
+    , lens
+    , nix-managed
     , tasty
     , tasty-hedgehog
     , tasty-hunit
     , text
+    , time
   default-language: Haskell2010

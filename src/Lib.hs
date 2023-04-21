@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralisedNewtypeDeriving #-}
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -16,7 +18,7 @@ someFunc = print "hello"
 -- -----
 -- @jsonName("very::strange::json:name")
 --
-newtype JsonName = JsonName {_jsonName :: String}
+newtype JsonName = JsonName {_jsonName :: String} deriving (Eq, Ord)
 instance Show JsonName where
   show :: JsonName -> String
   show JsonName{..} = [i|@jsonName("#{_jsonName}")|]
@@ -34,31 +36,34 @@ ex2 = JsonName "very::strange::json:name"
 
 newtype ClassName = ClassName
   { _className :: String
-  }
+  } deriving (Eq, Ord)
 
 instance Show ClassName where
   show :: ClassName -> String
   show ClassName{..} = _className
 
 data JsonPropertyElementaryType
-  = PNumber
+  = PNull
+  | PNumber
   | PString
   | PDate
-  | PVoid
+  | PVoid Int
   | PClass SomeClass
+  deriving (Eq, Ord)
 
 instance Show JsonPropertyElementaryType where
   show :: JsonPropertyElementaryType -> String
   show = \case
+    PNull -> "null"
     PNumber -> "Number"
     PString -> "String"
     PDate -> "Date"
-    PVoid -> "void 0"
+    PVoid n -> [i|void #{n}|]
     PClass SomeClass{..} -> show _someClass_name
 
-data TypeModifier = MSingle | MList
+data TypeModifier = MSingle | MList deriving (Eq, Ord)
 
-data FieldModifier = MPublic | MPrivate
+data FieldModifier = MPublic | MPrivate deriving (Eq, Ord)
 
 instance Show FieldModifier where
   show :: FieldModifier -> String
@@ -69,7 +74,7 @@ instance Show FieldModifier where
 data JsonPropertyCompleteType = JsonPropertyCompleteType
   { _jsonPropertyCompleteType_type :: JsonPropertyElementaryType
   , _jsonPropertyCompleteType_typeModifier :: TypeModifier
-  }
+  } deriving (Eq, Ord)
 
 instance Show JsonPropertyCompleteType where
   show :: JsonPropertyCompleteType -> String
@@ -80,13 +85,13 @@ instance Show JsonPropertyCompleteType where
 
 newtype JsonPropertyType = JsonPropertyType
   { _jsonPropertyType :: NonEmpty JsonPropertyCompleteType
-  }
+  } deriving (Eq, Ord)
 
 instance Show JsonPropertyType where
   show :: JsonPropertyType -> String
   show JsonPropertyType{..} = intercalate ", " (show <$> toList _jsonPropertyType)
 
-newtype JsonProperty = JsonProperty {_jsonProperty :: JsonPropertyType}
+newtype JsonProperty = JsonProperty {_jsonProperty :: JsonPropertyType} deriving (Eq, Ord)
 
 instance Show JsonProperty where
   show :: JsonProperty -> String
@@ -121,6 +126,7 @@ data ClassFieldValue
   | -- don't need constructor parameters as all fields
     -- have default values
     VClass {_jsonValue_className :: SomeClass}
+  deriving (Eq, Ord)
 
 instance Show ClassFieldValue where
   show :: ClassFieldValue -> String
@@ -134,28 +140,35 @@ instance Show ClassFieldValue where
        in [i|new Date(#{d'})|]
     VClass SomeClass{..} -> [i|new #{_someClass_name}()|]
 
-newtype ClassFieldName = ClassFieldName {_classFieldName :: String}
+newtype ClassFieldName = ClassFieldName {_classFieldName :: String} deriving (Eq, Ord)
 
 instance Show ClassFieldName where
   show :: ClassFieldName -> String
   show ClassFieldName{..} = _classFieldName
 
 data ClassFieldElementaryType
-  = TNumber
+  = TNull
+  | TVoid Int
+  | TNumber
   | TString
   | TDate
   | TClass SomeClass
+  deriving (Eq, Ord)
 
 instance Show ClassFieldElementaryType where
   show :: ClassFieldElementaryType -> String
   show = \case
     TNumber -> "number"
+    TNull -> "null"
+    TVoid n -> [i|void #{n}|]
     TString -> "string"
     TDate -> "Date"
     TClass (SomeClass{..}) -> show _someClass_name
 
-data ClassFieldCompleteType
-  = ClassFieldCompleteType ClassFieldElementaryType TypeModifier
+data ClassFieldCompleteType = ClassFieldCompleteType
+  { _classFieldCompleteType_type :: ClassFieldElementaryType
+  , _classFieldCompleteType_modifier :: TypeModifier
+  } deriving (Eq, Ord)
 
 instance Show ClassFieldCompleteType where
   show :: ClassFieldCompleteType -> String
@@ -166,14 +179,16 @@ instance Show ClassFieldCompleteType where
 
 newtype ClassFieldType = ClassFieldType
   { _classFieldType :: NonEmpty ClassFieldCompleteType
-  }
+  } deriving (Eq, Ord)
 
 instance Show ClassFieldType where
   show :: ClassFieldType -> String
   show ClassFieldType{..} = intercalate " | " (show <$> toList _classFieldType)
 
-data ClassFieldCompleteValue
-  = ClassFieldCompleteValue ClassFieldValue TypeModifier
+data ClassFieldCompleteValue = ClassFieldCompleteValue
+  { _classFieldCompleteValue_value :: ClassFieldValue
+  , _classFieldCompleteValue_typeModifier :: TypeModifier
+  } deriving (Eq, Ord)
 
 instance Show ClassFieldCompleteValue where
   show :: ClassFieldCompleteValue -> String
@@ -190,7 +205,7 @@ data ClassField = ClassField
   , _classField_isOptional :: Bool
   , _classField_type :: ClassFieldType
   , _classField_value :: ClassFieldCompleteValue
-  }
+  } deriving (Eq, Ord)
 
 instance Show ClassField where
   show :: ClassField -> String
@@ -222,11 +237,18 @@ ex3 =
 -- @jsonProperty(Number, [String])
 -- public birthdate?: number | [string] = ["some_string"];
 
+data ClassMethodType = CMString | CMNumber deriving (Eq, Ord)
+
+instance Show ClassMethodType where
+  show :: ClassMethodType -> String
+  show CMString = "string"
+  show CMNumber = "number"
+
 data ClassMethod = ClassMethod
   { _classMethod_modifier :: FieldModifier
   , _classMethod_name :: String
-  , _classMethod_type :: ClassFieldCompleteType
-  }
+  , _classMethod_type :: ClassMethodType
+  } deriving (Eq, Ord)
 
 instance Show ClassMethod where
   show :: ClassMethod -> String
@@ -237,17 +259,17 @@ ex4 =
   ClassMethod
     { _classMethod_modifier = MPublic
     , _classMethod_name = "other"
-    , _classMethod_type = ClassFieldCompleteType TNumber MSingle
+    , _classMethod_type = CMString
     }
 
 -- >>> ex4
--- public other(): number {return void 0;};
+-- public other(): string {return void 0;};
 
-data NamingStrategy = SnakeCase | KebabCase | PascalCase deriving (Show)
+data NamingStrategy = SnakeCase | KebabCase | PascalCase deriving (Show, Eq, Ord)
 
 newtype JsonObject = JsonObject
   { _namingStrategy :: NamingStrategy
-  }
+  } deriving (Eq, Ord)
 
 instance Show JsonObject where
   show :: JsonObject -> String
@@ -261,7 +283,7 @@ data SomeClass = SomeClass
   , _someClass_name :: ClassName
   , _someClass_fields :: NonEmpty ClassField
   , _someClass_methods :: NonEmpty ClassMethod
-  }
+  } deriving (Eq, Ord)
 
 instance Show SomeClass where
   show :: SomeClass -> String
@@ -273,7 +295,7 @@ instance Show SomeClass where
     }|]
    where
     indent = ("  " <>)
-    show' x = intercalate "\n\n" (unlines . (indent <$>) . lines . show <$> toList x)
+    show' x = intercalate "\n" (unlines . (indent <$>) . lines . show <$> toList x)
 
 ex5 :: SomeClass
 ex5 =
@@ -333,4 +355,3 @@ ex6 =
 --   public other(): number {return void 0;};
 -- <BLANKLINE>
 -- }
-

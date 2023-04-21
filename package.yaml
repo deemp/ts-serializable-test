@@ -60,6 +60,7 @@ tests:
     main: Main.hs
     source-dirs: test
     dependencies:
+      - nix-managed
       # - lima
       # - string-interpolate
       - tasty-hunit
@@ -70,3 +71,5 @@ tests:
       - tasty-hedgehog
       # - pretty-simple
       - breakpoint
+      - time
+      - lens

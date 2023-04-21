@@ -1,59 +1,55 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE ImplicitParams #-}
+{-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fplugin Debug.Breakpoint #-}
 
--- import Converter (Config, Format (..), Token (..), Tokens, User, def, exampleNonTexTokens, exampleTexTokens, normalizeTokens, selectFromTokens, selectToTokens, showFormatExtension, showFormatName, texHaskellCodeEnd, texHaskellCodeStart, toConfigInternal)
--- import Converter.Internal (stripEmpties)
--- import Data.List.NonEmpty (NonEmpty (..))
--- import Data.String.Interpolate (i)
--- import Data.Text qualified as T
--- import Data.Text.IO qualified as T
-import Hedgehog (Gen, MonadGen, MonadTest, Property, property, tripping)
+import Control.Lens (to, traversed, (^..))
+import Control.Monad.IO.Class (liftIO)
+import Data.List (intercalate)
+import Data.List.NonEmpty (NonEmpty, fromList, toList)
+import Data.Time (UTCTime (..), secondsToDiffTime)
+import Data.Time.Calendar.OrdinalDate (pattern YearDay)
+import Hedgehog (Gen, Property, property, withTests)
+import Hedgehog.Gen (alphaNum, bool, choice, element, frequency, integral, lower, nonEmpty, sample, string, subsequence, upper)
 import Hedgehog.Gen qualified as Gen
-import Hedgehog.Range qualified as Range
-
--- import Lens.Micro ((^.))
--- import System.Directory (createDirectoryIfMissing)
--- import System.IO (IOMode (WriteMode), withFile)
-import Test.Tasty (TestTree, defaultMain, testGroup, withResource)
-import Test.Tasty.HUnit (assertEqual, testCase)
+import Hedgehog.Range (constant)
+import Lib
+import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.Hedgehog (testProperty)
 
--- import Text.Pretty.Simple (CheckColorTty (..), OutputOptions (..), StringOutputStyle (Literal), defaultOutputOptionsDarkBg, pHPrintOpt)
-
--- testDir :: String
--- testDir = "testdata"
-
-import Data.List.NonEmpty (NonEmpty)
-import Data.Text qualified as T
-import Hedgehog.Gen (alphaNum, choice, element, lower, nonEmpty, string, subsequence, upper)
-import Hedgehog.Range
-import Lib
-
 main :: IO ()
-main = print "hello"
+main =
+  defaultMain $
+    testGroup
+      "Top"
+      [testTreeProperty]
 
+_NAME_LENGTH_MAX :: Int
 _NAME_LENGTH_MAX = 10
 
 genManyName :: Gen String
 genManyName = string (constant 0 _NAME_LENGTH_MAX) alphaNum
 
-genLowerCaseName :: Gen String
-genLowerCaseName = (:) <$> lower <*> genManyName
+genCamelCaseName :: Gen String
+genCamelCaseName = (:) <$> lower <*> genManyName
 
 genJsonName :: Gen JsonName
 genJsonName = JsonName <$> ((:) <$> lower <*> genManyName)
 
-genUpperCaseName :: Gen String
-genUpperCaseName = (:) <$> upper <*> genManyName
+genPascalCaseName :: Gen String
+genPascalCaseName = (:) <$> upper <*> genManyName
 
 genClassName :: Gen ClassName
-genClassName = ClassName <$> genUpperCaseName
+genClassName = ClassName <$> genPascalCaseName
 
 genJsonPropertyElementaryType :: (?classes :: [SomeClass]) => Gen JsonPropertyElementaryType
 genJsonPropertyElementaryType = do
-  cl <- element ?classes
-  element [PNumber, PString, PDate, PVoid, PClass cl]
+  frequency
+    ( [(1, pure PNumber), (1, pure PString), (1, pure PDate), (1, PVoid <$> genNumber)]
+        <> [(10, PClass <$> element ?classes) | not $ null ?classes]
+    )
 
 genTypeModifier :: Gen TypeModifier
 genTypeModifier = element [MSingle, MList]
@@ -67,9 +63,14 @@ genJsonPropertyCompleteType = do
   _jsonPropertyCompleteType_typeModifier <- genTypeModifier
   pure JsonPropertyCompleteType{..}
 
+allDifferent :: (Eq a) => [a] -> Bool
+allDifferent [] = True
+allDifferent (x : xs) = x `notElem` xs && allDifferent xs
+
 genJsonPropertyType :: (?classes :: [SomeClass]) => Gen JsonPropertyType
 genJsonPropertyType = do
-  _jsonPropertyType <- nonEmpty (constant 1 3) genJsonPropertyCompleteType
+  -- TODO unique types
+  _jsonPropertyType <- Gen.filter (allDifferent . toList) (nonEmpty (constant 1 3) genJsonPropertyCompleteType)
   pure JsonPropertyType{..}
 
 genJsonProperty :: (?classes :: [SomeClass]) => Gen JsonProperty
@@ -79,189 +80,119 @@ genJsonProperty = do
 
 -- ---
 
+genUTCTime :: Gen UTCTime
+genUTCTime = do
+  y <- integral (constant 1970 2100)
+  dy <- integral (constant 1 360)
+  let utctDay = YearDay y dy
+  utctDayTime <- secondsToDiffTime <$> integral (constant 1 86000)
+  pure UTCTime{..}
+
+genNumber :: Gen Int
+genNumber = integral (constant (-100) 100)
+
+-- TODO generate unicode, exclude special characters
+genString :: Gen String
+genString = string (constant 0 10) alphaNum
 
 -- TODO mutate class from type
-
 -- TODO jsonProperty sets the type for field
--- genClassFieldValue :: (?selectedTypes :: NonEmpty JsonPropertyCompleteType) => Gen ClassFieldValue
--- genClassFieldValue = do 
+genClassFieldValue :: (?selectedTypes :: NonEmpty JsonPropertyCompleteType) => Gen ClassFieldCompleteValue
+genClassFieldValue = do
+  choice $
+    ?selectedTypes
+      ^.. traversed
+        . to
+          ( \JsonPropertyCompleteType{..} -> do
+              let _classFieldCompleteValue_typeModifier = _jsonPropertyCompleteType_typeModifier
+              _classFieldCompleteValue_value <-
+                case _jsonPropertyCompleteType_type of
+                  PNull -> pure VNull
+                  PVoid n -> pure $ VVoid n
+                  PNumber -> VNumber <$> genNumber
+                  PString -> VString <$> genString
+                  PDate -> VDate <$> Gen.maybe genUTCTime
+                  PClass c -> pure $ VClass c
+              pure ClassFieldCompleteValue{..}
+          )
 
+genClassFieldType :: (?selectedTypes :: NonEmpty JsonPropertyCompleteType) => ClassFieldType
+genClassFieldType =
+  ClassFieldType . fromList $
+    ?selectedTypes
+      ^.. traversed
+        . to
+          ( \JsonPropertyCompleteType{..} ->
+              let _classFieldCompleteType_modifier = _jsonPropertyCompleteType_typeModifier
+                  _classFieldCompleteType_type =
+                    case _jsonPropertyCompleteType_type of
+                      PNull -> TNull
+                      PVoid n -> TVoid n
+                      PNumber -> TNumber
+                      PString -> TString
+                      PDate -> TDate
+                      PClass c -> TClass c
+               in ClassFieldCompleteType{..}
+          )
 
--- genNonEmpty :: Gen (NonEmpty T.Text)
--- genNonEmpty = Gen.nonEmpty (Range.constant 1 5) genLine
+genClassField :: (?classes :: [SomeClass]) => Gen ClassField
+genClassField = do
+  _classField_jsonName <- Gen.maybe genJsonName
+  _classField_jsonProperty <- genJsonProperty
+  _classField_modifier <- genFieldModifier
+  _classField_name <- ClassFieldName <$> genCamelCaseName
+  _classField_isOptional <- bool
+  let ?selectedTypes = _classField_jsonProperty._jsonProperty._jsonPropertyType
+  let _classField_type = genClassFieldType
+  _classField_value <- genClassFieldValue
+  pure ClassField{..}
 
--- defaultMain $
---   testGroup
---     "Top"
---     [ testWrite Md
---     , testWrite TeX
---     , testTripping TeX
---     , testTripping Md
---     ]
+-- TODO unique class field names
 
--- -- How many tokens to generate for tripping tests
--- _N_TOKENS :: Int
--- _N_TOKENS = 1000
+genClassMethodType :: Gen ClassMethodType
+genClassMethodType = element [CMString, CMNumber]
 
--- -- TODO test initial haskell code indentation is the same as after parsing
--- -- so, generate lines with indentation relative to the previous indent token
+genClassMethod :: Gen ClassMethod
+genClassMethod = do
+  _classMethod_modifier <- genFieldModifier
+  _classMethod_name <- genCamelCaseName
+  _classMethod_type <- genClassMethodType
+  pure ClassMethod{..}
 
--- -- TODO test no newline as the first line in fromTokens
+genNamingStrategy :: Gen NamingStrategy
+genNamingStrategy = element [SnakeCase, KebabCase, PascalCase]
 
--- -- TODO no newlines in the generated lines
+genJsonObject :: Gen JsonObject
+genJsonObject = JsonObject <$> genNamingStrategy
 
--- --
+genSomeClass :: (?classes :: [SomeClass]) => Gen SomeClass
+genSomeClass = do
+  _someClass_jsonObject <- genJsonObject
+  _someClass_name <- genClassName
+  _someClass_fields <-
+    nonEmpty (constant 2 5) genClassField
+  _someClass_methods <-
+    nonEmpty (constant 2 5) genClassMethod
+  pure SomeClass{..}
 
--- selectDialectName :: Format -> String
--- selectDialectName = \case
---   TeX -> showFormatName TeX
---   _ -> "Non-" <> showFormatName TeX
+genClasses :: Int -> Gen [SomeClass] -> Gen [SomeClass]
+genClasses 0 cs = cs
+genClasses n cs =
+  genClasses
+    (n - 1)
+    ( do
+        cs1 <- cs
+        cs2 <- subsequence cs1
+        cs3 <-
+          let ?classes = cs2
+           in genSomeClass
+        pure $ cs3 : cs2
+    )
 
--- testDialectWrite :: FilePath -> Tokens -> Format -> TestTree
--- testDialectWrite dir tokens format =
---   testCase [i|Write #{showFormatName format} code|] do
---     let text = selectFromTokens def format tokens
---     T.writeFile [i|#{dir}/test.#{showFormatExtension format}|] text
---     assertEqual "Roundtrip" tokens (selectToTokens def format text)
+mkProperty :: Property
+mkProperty = withTests 1 $ property do
+  s <- sample (genClasses 10 (pure []))
+  liftIO $ putStrLn $ "\n\n" <> intercalate "\n\n" (show <$> s)
 
--- writeTokens :: FilePath -> Tokens -> TestTree
--- writeTokens dir tokens = testCase "Write tokens to a file" $
---   withFile [i|#{dir}/tokens.hs|] WriteMode $
---     \h ->
---       pHPrintOpt
---         CheckColorTty
---         ( defaultOutputOptionsDarkBg
---             { outputOptionsStringStyle = Literal
---             }
---         )
---         h
---         tokens
-
--- testFormatsWrite :: FilePath -> [Format] -> Tokens -> [TestTree]
--- testFormatsWrite dir formats tokens =
---   (testDialectWrite dir tokens <$> formats) <> [writeTokens dir tokens]
-
--- selectTokens :: Format -> Tokens
--- selectTokens = \case
---   TeX -> exampleTexTokens
---   _ -> exampleNonTexTokens
-
--- selectFormats :: Format -> [Format]
--- selectFormats = \case
---   TeX -> [Hs, Md, Lhs, TeX]
---   _ -> [Hs, Lhs, Md]
-
--- testWrite :: Format -> TestTree
--- testWrite format =
---   let dir = [i|#{testDir}/#{showFormatExtension format}|]
---    in withResource (createDirectoryIfMissing True dir) pure $
---         const $
---           testGroup [i|Using #{selectDialectName format} tokens|] $
---             (testFormatsWrite dir (selectFormats format) (selectTokens format))
-
--- alphabet :: MonadGen m => m Char
--- alphabet = Gen.alphaNum
-
--- genNonEmpty :: Gen (NonEmpty T.Text)
--- genNonEmpty = Gen.nonEmpty (Range.constant 1 5) genLine
-
--- genLine :: Gen T.Text
--- genLine = do
---   indent <- Gen.text (Range.constant 0 5) (pure ' ')
---   content <- Gen.text (Range.constant 1 5) alphabet
---   pure $ indent <> content
-
--- genLines :: Gen [T.Text]
--- genLines = Gen.list (Range.constant 1 5) genLine
-
--- -- Tokens
-
--- genIndent :: Gen Token
--- genIndent = do
---   n <- Gen.int (Range.constant 0 10)
---   pure Indent{..}
-
--- genDedent :: Gen Token
--- genDedent = pure Dedent
-
--- genComment :: Gen Token
--- genComment = do
---   someLines <- genNonEmpty
---   pure $ Comment{someLines}
-
--- genText :: Gen Token
--- genText = do
---   someLines <- genNonEmpty
---   pure Text{..}
-
--- genCommentSingleLine :: Gen Token
--- genCommentSingleLine = do
---   someLine <- genLine
---   pure CommentSingleLine{..}
-
--- genNonDisabled :: (?genCode :: GenCode) => Gen Tokens
--- genNonDisabled =
---   Gen.choice $
---     [?genCode] <> (((: []) <$>) <$> [genComment, genCommentSingleLine, genText, genIndent, genDedent])
-
--- genDisabled :: Env => Gen Token
--- genDisabled = do
---   tokens <- genNonDisabled
---   let manyLines = reverse $ T.lines $ selectFromTokens ?config ?format tokens
---   pure $ Disabled{manyLines}
-
--- genTokensSublist :: Env => Gen Tokens
--- genTokensSublist =
---   Gen.choice $ [genNonDisabled, (: []) <$> genDisabled]
-
--- genTokens :: Env => Gen Tokens
--- genTokens = do
---   subLists <- Gen.list (Range.singleton _N_TOKENS) genTokensSublist
---   pure $ normalizeTokens $ concat subLists
-
--- -- Code tokens from tex files can only be recognized in a specific sequence
--- -- That's why, they're generated in a list
--- texGenCode :: (?config :: Config User) => Gen [Token]
--- texGenCode = do
---   let config = toConfigInternal ?config
---   manyLines <- genLines
---   let manyLines' = if null (stripEmpties manyLines) then ["a"] else manyLines
---   pure $
---     [ Text{someLines = config ^. texHaskellCodeStart :| []}
---     , HaskellCode{manyLines = manyLines'}
---     , Text{someLines = config ^. texHaskellCodeEnd :| []}
---     ]
-
--- -- Code tokens from tex files can only be recognized in a specific sequence
--- -- That's why, they're generated in a list
--- nonTexGenCode :: Gen [Token]
--- nonTexGenCode = do
---   manyLines <- genLines
---   let manyLines' = if null (stripEmpties manyLines) then ["a"] else manyLines
---   pure [HaskellCode{manyLines = manyLines'}]
-
--- -- Tripping
--- trippingTokens :: (MonadTest m, ?config :: Config User, ?format :: Format) => Tokens -> m ()
--- trippingTokens tokens =
---   tripping tokens (selectFromTokens ?config ?format) (Just . selectToTokens ?config ?format)
-
--- testTrippingTokens :: Env => Property
--- testTrippingTokens = property do
---   tokens <- Gen.sample $ genTokens
---   -- breakpointM
---   trippingTokens tokens
-
--- type GenCode = Gen [Token]
-
--- type Env = (?config :: Config User, ?format :: Format, ?genCode :: GenCode)
-
--- selectGenCode :: Format -> ((?config :: Config User) => GenCode)
--- selectGenCode = \case
---   TeX -> texGenCode
---   _ -> nonTexGenCode
-
--- testTripping :: Format -> TestTree
--- testTripping format =
---   let ?config = def; ?format = format
---    in let ?genCode = selectGenCode format
---        in testProperty [i|Roundtrip #{selectDialectName format} tokens for all formats|] $ testTrippingTokens
+testTreeProperty :: TestTree
+testTreeProperty = testProperty "prints" mkProperty
