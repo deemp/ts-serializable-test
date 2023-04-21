@@ -273,7 +273,7 @@ newtype JsonObject = JsonObject
 
 instance Show JsonObject where
   show :: JsonObject -> String
-  show JsonObject{..} = [i|jsonObject({ namingStrategy: new #{_namingStrategy}NamingStrategy() })|]
+  show JsonObject{..} = [i|@jsonObject({ namingStrategy: new #{_namingStrategy}NamingStrategy() })|]
 
 -- -----
 -- Class

@@ -192,7 +192,7 @@ genClasses n cs =
 mkProperty :: Property
 mkProperty = withTests 1 $ property do
   s <- sample (genClasses 10 (pure []))
-  liftIO $ putStrLn $ "\n\n" <> intercalate "\n\n" (show <$> s)
+  liftIO $ writeFile "ts-serializable/index.ts" $ "\n\n" <> intercalate "\n\n" (show <$> s)
 
 testTreeProperty :: TestTree
 testTreeProperty = testProperty "prints" mkProperty
