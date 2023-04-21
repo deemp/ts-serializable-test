@@ -62,7 +62,7 @@ tests:
     dependencies:
       - nix-managed
       # - lima
-      # - string-interpolate
+      - string-interpolate
       - tasty-hunit
       - tasty
       - text

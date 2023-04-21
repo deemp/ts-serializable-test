@@ -2,6 +2,7 @@
 {-# LANGUAGE ImplicitParams #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fplugin Debug.Breakpoint #-}
 
@@ -9,6 +10,7 @@ import Control.Lens (to, traversed, (^..))
 import Control.Monad.IO.Class (liftIO)
 import Data.List (intercalate)
 import Data.List.NonEmpty (NonEmpty, fromList, toList)
+import Data.String.Interpolate (__i'L)
 import Data.Time (UTCTime (..), secondsToDiffTime)
 import Data.Time.Calendar.OrdinalDate (pattern YearDay)
 import Hedgehog (Gen, Property, property, withTests)
@@ -186,13 +188,18 @@ genClasses n cs =
         cs3 <-
           let ?classes = cs2
            in genSomeClass
-        pure $ cs3 : cs2
+        pure $ cs2 <> [cs3]
     )
 
 mkProperty :: Property
 mkProperty = withTests 1 $ property do
   s <- sample (genClasses 10 (pure []))
-  liftIO $ writeFile "ts-serializable/index.ts" $ "\n\n" <> intercalate "\n\n" (show <$> s)
+  liftIO $
+    writeFile "ts-serializable/index.ts" $
+      [__i'L|
+      import { jsonObject, jsonProperty, jsonName, Serializable, SnakeCaseNamingStrategy } from "ts-serializable";
+      #{"\n\n" <> intercalate "\n\n" (show <$> s)}
+      |]
 
 testTreeProperty :: TestTree
 testTreeProperty = testProperty "prints" mkProperty

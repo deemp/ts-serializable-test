@@ -71,6 +71,7 @@ test-suite conversions
     , hedgehog
     , lens
     , nix-managed
+    , string-interpolate
     , tasty
     , tasty-hedgehog
     , tasty-hunit

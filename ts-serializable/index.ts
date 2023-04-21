@@ -1,79 +1,55 @@
+
 import { jsonObject, jsonProperty, jsonName, Serializable, SnakeCaseNamingStrategy } from "ts-serializable";
 
-@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
-export class GGlmuJ5 extends Serializable {
-  @jsonName("jXPrGl0")
-  @jsonProperty([PQDOf], OUoyn)
-  public d?: [PQDOf] | OUoyn = new OUoyn();
 
-  @jsonName("nuXb")
-  @jsonProperty(PQDOf, [PQDOf], [String])
-  private bJNBrV3y?: PQDOf | [PQDOf] | [string] = new PQDOf();
+@jsonObject({ namingStrategy?: new SnakeCaseNamingStrategy() })
+export class JUYMeEIfPM extends Serializable {
+  @jsonName("wfv5HccS")
+  @jsonProperty([NFrWh4mVW], void 17)
+  private n3TCU?: [NFrWh4mVW] | void 17 = [new NFrWh4mVW()];
 
-  @jsonName("raatP")
-  @jsonProperty([PQDOf], PQDOf)
-  private fsedziuU5nH?: [PQDOf] | PQDOf = [new PQDOf()];
+  @jsonName("y1WsfwA2c")
+  @jsonProperty(Date, NFrWh4mVW)
+  private lpZIxlCY?: Date | NFrWh4mVW = new Date("2039-07-19 09:34:44 UTC");
 
-  public r(): number {return void 0;};
+  @jsonName("k0E6yW9")
+  @jsonProperty(Number)
+  public l7CR6d1R: number = -5;
 
-  private b(): string {return void 0;};
+  @jsonName("hy")
+  @jsonProperty(NFrWh4mVW)
+  public s81I5hE: NFrWh4mVW = new NFrWh4mVW();
 
-  private faX92(): string {return void 0;};
+  public wmt(): string { return void 0; };
+
+  public vc2sWva(): number { return void 0; };
+
+  public o8(): number { return void 0; };
 
 }
 
 @jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
-export class OUoyn extends Serializable {
-  @jsonName("jCaYD")
-  @jsonProperty([void 93])
-  private u1LnrLT?: [void 93] = [void 93];
-
-  @jsonName("qFk")
-  @jsonProperty([PQDOf], Date, [Number])
-  private hOnXtUWZ?: [PQDOf] | Date | [number] = [-68];
-
-  @jsonName("jObo")
-  @jsonProperty(PQDOf)
-  public dWdkFaIzb?: PQDOf = new PQDOf();
-
-  @jsonName("b")
+export class O9JO5LC extends Serializable {
+  @jsonName("bLHSaqg1W")
   @jsonProperty(Date)
-  public xR6JSzDKc: Date = new Date("2056-10-18 16:34:24 UTC");
+  private wGQfznGrcQ: Date = new Date("1977-09-06 16:09:33 UTC");
 
-  private bnupK4Q(): number {return void 0;};
+  @jsonName("whMQ")
+  @jsonProperty(String)
+  private oNSG?: string = "1Vor4";
 
-  public w8XB0oVIU(): string {return void 0;};
+  @jsonName("iB8SWyLfd")
+  @jsonProperty(JUYMeEIfPM, [JUYMeEIfPM])
+  private o?: JUYMeEIfPM | [JUYMeEIfPM] = new JUYMeEIfPM();
 
-  public ksTn8ro1(): string {return void 0;};
+  @jsonName("uzXWOIKn")
+  @jsonProperty(String)
+  private gn?: string = "Oz";
 
-  private xaJ(): string {return void 0;};
+  private aIZlxxy2m(): string { return void 0; };
 
-}
+  public ztbVV7oLu4e(): number { return void 0; };
 
-@jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
-export class PQDOf extends Serializable {
-  @jsonName("d")
-  @jsonProperty(YHPNW7N, [YHPNW7N])
-  public pYbw5aX?: YHPNW7N | [YHPNW7N] = [new YHPNW7N()];
-
-  @jsonName("cTPLS")
-  @jsonProperty(YHPNW7N, [YHPNW7N], [String])
-  public pBKeYn7PV: YHPNW7N | [YHPNW7N] | [string] = [new YHPNW7N()];
-
-  @jsonName("shPoJTpY")
-  @jsonProperty(YHPNW7N)
-  private a9?: YHPNW7N = new YHPNW7N();
-
-  @jsonName("k53Kl")
-  @jsonProperty([void -97], [YHPNW7N], YHPNW7N)
-  public jSppWqfl: [void -97] | [YHPNW7N] | YHPNW7N = [void -97];
-
-  @jsonName("pWdexZ0CQ7A")
-  @jsonProperty([YHPNW7N])
-  public ir6LM4r: [YHPNW7N] = [new YHPNW7N()];
-
-  public pcyAnJu(): number {return void 0;};
-
-  private rLNu(): number {return void 0;};
+  private tCW(): string { return void 0; };
 
 }
