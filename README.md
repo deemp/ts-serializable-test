@@ -2,7 +2,8 @@
 
 This project provides a generator of `TypeScript` classes with decorators from `ts-serializable`.
 
-The generated result is in [index.ts](./ts-serializable/index.ts).
+- generated classes: [index.ts](./ts-serializable/index.ts).
+- generated JSON: [result.json](./ts-serializable/result.json)
 
 ## Quick start
 
