@@ -11,10 +11,8 @@
 
 module AST where
 
-import Control.Lens (filtered, isn't, traversed, (^.), (^..))
 import Data.Generics.Labels ()
 import Data.Generics.Product ()
-import Data.Generics.Sum (_Ctor)
 import Data.List (intercalate)
 import Data.List.NonEmpty as NE (NonEmpty (..), toList)
 import Data.String.Interpolate (i, __i'L)

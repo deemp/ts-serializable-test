@@ -234,10 +234,12 @@ mkProperty :: Property
 mkProperty = withTests 1 $ property do
   classes <- sample (genClasses 10 (pure []))
   topClass <- sample $ genTopClass classes
+  let topClassName = show $ topClass ^. #_someClass_name
   liftIO $
     writeFile
       "ts-serializable/index.ts"
       [__i'L|
+      import 'reflect-metadata'
       import { 
         jsonObject, 
         jsonProperty, 
@@ -248,6 +250,13 @@ mkProperty = withTests 1 $ property do
         PascalCaseNamingStrategy
       } from "ts-serializable";
       #{"\n\n" <> intercalate "\n\n" (toList $ (show <$> (classes <> (topClass :| []))))}
+
+      console.log("\\n\\nto JSON\\n\\n")
+      const top = new #{topClassName}().toJSON()
+      console.log(top)
+
+      console.log("\\n\\nfrom JSON\\n\\n")
+      console.log(#{topClassName}.fromJSON(top))
       |]
 
 testTreeProperty :: TestTree
