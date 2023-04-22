@@ -1,39 +1,26 @@
-# Haskell
+# `ts-serializable` test
 
-- `VSCodium` with extensions and executables for `Haskell`.
-- A sample `Haskell` project.
+This project provides a generator of `TypeScript` classes with decorators from `ts-serializable`.
 
-Feel free to remove the `VSCodium`-related `Nix` code and whatever you want!
-
-## Prerequisites
-
-- [flake.nix](./flake.nix) - code in this flake is extensively commented.
-- [language-tools/haskell](https://github.com/deemp/flakes/blob/main/language-tools/haskell/flake.nix) - a flake that conveniently provides `Haskell` tools.
-- [Conventions](https://github.com/deemp/flakes/blob/main/README/Conventions.md#dev-tools) - I recommended to use this flake just for development. For packaging an app, make another flake with a limited number of inputs to reduce the `flake.lock` size.
-
-See these for additional info:
-
-- [codium-generic](https://github.com/deemp/flakes/tree/main/templates/codium/generic#readme) - info just about `VSCodium` with extensions.
-- [codium-haskell](https://github.com/deemp/flakes/tree/main/templates/codium/haskell#readme) - an advanced version of this flake.
-  - Shows how to build a static binary from your package and how to make a Docker image with it.
-- [Haskell](https://github.com/deemp/flakes/blob/main/README/Haskell.md) - general info about `Haskell` tools.
-- [Troubleshooting](https://github.com/deemp/flakes/blob/main/README/Troubleshooting.md)
-- [Prerequisites](https://github.com/deemp/flakes#prerequisites)
-- [Nixpkgs support for incremental Haskell builds](https://www.haskellforall.com/2022/12/nixpkgs-support-for-incremental-haskell.html)
-- [flakes](https://github.com/deemp/flakes#readme) - my Nix flakes that may be useful for you.
+The generated result is in [index.ts](./ts-serializable/index.ts).
 
 ## Quick start
 
 1. Install Nix - see [how](https://github.com/deemp/flakes/blob/main/README/InstallNix.md).
 
-1. In a new terminal, start a devshell and run the app.
+1. In a new terminal, start a devshell and run the `Haskell` app. This command will generate [index.ts](./ts-serializable/index.ts).
 
     ```console
-    nix flake new my-project -t github:deemp/flakes#codium-haskell-simple
-    cd my-project
-    git init && git add
     nix develop
     cabal run
+    ```
+
+1. Run that `TypeScript` file.
+
+    ```console
+    cd ts-serializable
+    npm i
+    npx tsx index.ts
     ```
 
 1. Write `settings.json` and start `VSCodium`.
@@ -46,67 +33,6 @@ See these for additional info:
 1. Open a `Haskell` file `app/Main.hs` and hover over a function.
 
 1. Wait until `Haskell Language Server` (`HLS`) starts giving you type info.
-
-## Default devshell
-
-The `nix-managed` package (package in this flake) has several non-`Haskell` dependencies.
-
-First, as `nix-managed` uses an `lzma` package, it needs a `C` library `liblzma`. This library is delivered via `Nix` as `pkgs.lzma`.
-
-Second, `nix-managed` calls the `hello` command at runtime (see `someFunc` in `src/Lib.hs`). This command comes from a `hello` executable which is delivered via `Nix` as `pkgs.hello`.
-
-`cabal` that I used in `flake.nix` has on its `PATH` that `hello` executable.
-
-Let's inspect what's available.
-
-1. Enter the `devShell`.
-
-    ```console
-    nix develop
-    ```
-
-1. Run the app.
-
-    ```console
-    cabal run
-    ```
-
-1. Next, access the `hello` executable in a repl.
-
-    ```console
-    cabal repl
-    ghci> :?
-    ...
-    :!<command> run the shell command <command>
-    ...
-    ghci> :! hello
-    Hello, world!
-    ```
-
-1. `ghcid` uses the `cabal repl` command. That's why, when running `ghcid`, `hello` will be available to the app.
-
-    ```console
-    ghcid
-    ```
-
-1. `ghcid` will run not only the `main` function, but also the code in magic comments (See `app/Main.hs`).
-
-1. Sometimes, `cabal` doesn't use the `Nix`-supplied packages ([issue](https://github.com/NixOS/nixpkgs/issues/130556#issuecomment-1114239002)). In this case, use `cabal v1-*` - commands.
-
-## GHC
-
-This template uses `GHC 9.2.5`. See the available `GHC` versions:
-
-```console
-nix repl
-:lf .
--- use your system
-ghcVersions.x86_64-linux
-```
-
-To switch to `GHC 9.0.2`:
-
-1. In `flake.nix`, change GHC version from `"925"` to `"902"`.
 
 ## Configs
 
