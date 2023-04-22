@@ -240,23 +240,44 @@ mkProperty = withTests 1 $ property do
       "ts-serializable/index.ts"
       [__i'L|
       import 'reflect-metadata'
-      import { 
-        jsonObject, 
-        jsonProperty, 
-        jsonName, 
-        Serializable, 
+      import {
+        jsonObject,
+        jsonProperty,
+        jsonName,
+        Serializable,
         SnakeCaseNamingStrategy,
         KebabCaseNamingStrategy,
         PascalCaseNamingStrategy
       } from "ts-serializable";
+      import { writeFileSync } from 'fs';
+      import { join } from 'path';
       #{"\n\n" <> intercalate "\n\n" (toList $ (show <$> (classes <> (topClass :| []))))}
+      const toJSONMessage = "\\n\\nto JSON\\n\\n"
+      console.log(toJSONMessage)
 
-      console.log("\\n\\nto JSON\\n\\n")
-      const top = new #{topClassName}().toJSON()
-      console.log(top)
+      const topToJSON = new #{topClassName}().toJSON()
+      console.log(topToJSON)
 
-      console.log("\\n\\nfrom JSON\\n\\n")
-      console.log(#{topClassName}.fromJSON(top))
+      const fname = "result.txt"
+
+      function syncWriteFile(filename: string = fname, data: any) {
+        writeFileSync(join(__dirname, filename), JSON.stringify(data, null, 2), {
+          flag: 'w',
+        });
+      }
+
+      syncWriteFile(fname, toJSONMessage)
+      syncWriteFile(fname, topToJSON)
+
+      const fromJSONMessage = "\\n\\nfrom JSON\\n\\n"
+
+      const topFromJSON = #{topClassName}.fromJSON(topToJSON)
+
+      console.log(fromJSONMessage)
+      console.log(topFromJSON)
+
+      syncWriteFile(fname, fromJSONMessage)
+      syncWriteFile(fname, topFromJSON)
       |]
 
 testTreeProperty :: TestTree
