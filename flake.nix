@@ -122,6 +122,7 @@
         # so you may remove `ghc` from this list
         # Then, you can access `ghc` via `cabal repl` -> `ghci>:! ghc`
         ghc
+        pkgs.nodejs-16_x
       ];
 
       # --- Packages ---
