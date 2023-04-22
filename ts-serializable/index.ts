@@ -13,299 +13,321 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 
 
-@jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
-export class YAKu extends Serializable {
-  @jsonName("tgB3fm")
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class ATgCbs35 extends Serializable {
+  @jsonName("zUkUnO0VK2K")
+  @jsonProperty(void -23)
+  public wQxpOQJldb?  = void -23;
+
+  @jsonName("zJyC")
+  @jsonProperty(Date, [Date])
+  public zZJ: Date | [Date] = new Date("2091-03-31 19:38:13 UTC");
+
+  @jsonName("xU80")
+  @jsonProperty(void -29)
+  public hfKV?  = void -29;
+
+  @jsonName("y5vaQLYo")
+  @jsonProperty(Number, Date, [String])
+  private tOM6LO8: number | Date | [string] = -32;
+
+  @jsonName("wl6")
+  @jsonProperty(void -9, String)
+  public uQuWZ?: string = void -9;
+
+  public jXMitp(): number { return 0; };
+
+  public kB8XDPoGId(): number { return 0; };
+
+  public p5oiJ6s555(): number { return 0; };
+
+  public yLOzd8Wz(): string { return ""; };
+
+  private sIqNRCGr(): string { return ""; };
+
+}
+
+@jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
+export class FEu55QipQV extends Serializable {
+  @jsonName("x555b")
+  @jsonProperty(Date, String, [Number])
+  private xwnI2lgCKYb: Date | string | [number] = new Date("1978-02-09 15:46:36 UTC");
+
+  @jsonName("iAleGcJNanX")
+  @jsonProperty(Date, void -91, void 17)
+  public xBGLKJGU866?: Date = void 17;
+
+  @jsonName("ySul")
+  @jsonProperty(void -27)
+  private ayqeQK9Dz?  = void -27;
+
+  @jsonName("iTgaev")
+  @jsonProperty([Number], void -68)
+  private n19vFr4AX: [number] = [91];
+
+  public nGQS(): number { return 0; };
+
+  private nNizdpo6U3o(): string { return ""; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class IZ5E4dM3 extends Serializable {
+  @jsonName("pDbztxYO7")
+  @jsonProperty(void 75, Number)
+  private bBrL: number = 25;
+
+  @jsonName("dOftW")
+  @jsonProperty(void 31)
+  public wsRU?  = void 31;
+
+  @jsonName("xl3b52AXY")
+  @jsonProperty([FEu55QipQV])
+  public zHatTORD: [FEu55QipQV] = [new FEu55QipQV()];
+
+  @jsonName("rzbyN3Own")
   @jsonProperty([Number])
-  private fUA: [number] = [82];
+  private pmBpYUr: [number] = [49];
 
-  @jsonName("yhpzR")
+  @jsonName("sJf4H")
+  @jsonProperty(FEu55QipQV)
+  private iuIOiSwn: FEu55QipQV = new FEu55QipQV();
+
+  private faH(): number { return 0; };
+
+  private tO2e(): string { return ""; };
+
+  public f1q(): number { return 0; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class WMZkC6wllo extends Serializable {
+  @jsonName("oC8HFUy0rO")
+  @jsonProperty(ATgCbs35)
+  public zhOTa: ATgCbs35 = new ATgCbs35();
+
+  @jsonName("lKO")
+  @jsonProperty([ATgCbs35], [Number], [String])
+  private gQwb: [ATgCbs35] | [number] | [string] = [-10];
+
+  public lJqmd(): string { return ""; };
+
+  public el7ToT(): number { return 0; };
+
+  public qGB27d(): number { return 0; };
+
+  private vxZqo2(): number { return 0; };
+
+  public dFl7abCGG(): string { return ""; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class XT2nvyPJiYs extends Serializable {
+  @jsonName("mAxo")
+  @jsonProperty([Number], [ATgCbs35])
+  private yOJIik: [number] | [ATgCbs35] = [new ATgCbs35()];
+
+  @jsonName("wA3Gem473q")
+  @jsonProperty(ATgCbs35, Date, [String])
+  private rKy: ATgCbs35 | Date | [string] = ["40GeD7U"];
+
+  @jsonName("zwOOu49C7w")
+  @jsonProperty([ATgCbs35], void 65, [String])
+  private t0xo: [ATgCbs35] | [string] = ["8v2gqWkg"];
+
+  public b1KW(): string { return ""; };
+
+  public qWk0Ax(): number { return 0; };
+
+}
+
+@jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
+export class Hous extends Serializable {
+  @jsonName("rFQ6JpS")
+  @jsonProperty([IZ5E4dM3])
+  public mr3f: [IZ5E4dM3] = [new IZ5E4dM3()];
+
+  @jsonName("yn6KJmZY")
+  @jsonProperty(IZ5E4dM3, ATgCbs35)
+  private med8X: IZ5E4dM3 | ATgCbs35 = new ATgCbs35();
+
+  @jsonName("qqbuYLSaGc")
+  @jsonProperty([IZ5E4dM3])
+  public apCD: [IZ5E4dM3] = [new IZ5E4dM3()];
+
+  @jsonName("jgWYn")
+  @jsonProperty(ATgCbs35)
+  public cJdJOA: ATgCbs35 = new ATgCbs35();
+
+  @jsonName("gCE1fIT")
+  @jsonProperty(Date)
+  public mMNDsGM: Date = new Date("2014-10-22 19:28:28 UTC");
+
+  public rNWyvXvk2(): number { return 0; };
+
+  private fFsHg(): string { return ""; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class VkyEF extends Serializable {
+  @jsonName("xen")
+  @jsonProperty(Hous, [Hous])
+  private yfexG8qqv20: Hous | [Hous] = new Hous();
+
+  @jsonName("q4z5m2")
+  @jsonProperty([Date], [XT2nvyPJiYs], [String])
+  private bY9i92UD9ad: [Date] | [XT2nvyPJiYs] | [string] = [new XT2nvyPJiYs()];
+
+  @jsonName("w48JQww35")
+  @jsonProperty(Hous, String, [Hous])
+  public kN1pnD: Hous | string | [Hous] = new Hous();
+
+  private kEUhF(): number { return 0; };
+
+  public oDTXgFy(): string { return ""; };
+
+  public vGovkoMako(): string { return ""; };
+
+  private hMyt(): number { return 0; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class W9Gk extends Serializable {
+  @jsonName("geFvE")
+  @jsonProperty(WMZkC6wllo)
+  public vzg: WMZkC6wllo = new WMZkC6wllo();
+
+  @jsonName("desoSre")
+  @jsonProperty(void -55, [ATgCbs35])
+  private fYAEir2XlL: [ATgCbs35] = [new ATgCbs35()];
+
+  @jsonName("xw4fw")
+  @jsonProperty(WMZkC6wllo, [WMZkC6wllo], [Hous])
+  public uW6: WMZkC6wllo | [WMZkC6wllo] | [Hous] = new WMZkC6wllo();
+
+  @jsonName("yDGA")
+  @jsonProperty(ATgCbs35, [Date], [String])
+  private y59e8Nm: ATgCbs35 | [Date] | [string] = new ATgCbs35();
+
+  @jsonName("wV7")
+  @jsonProperty(Number, ATgCbs35, [WMZkC6wllo])
+  public fBR1QVHV: number | ATgCbs35 | [WMZkC6wllo] = [new WMZkC6wllo()];
+
+  private daL(): number { return 0; };
+
+  public eJ1RMQJ(): number { return 0; };
+
+}
+
+@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
+export class OUoMQftGtgT extends Serializable {
+  @jsonName("qbMU")
   @jsonProperty(String)
-  public k7fNdPOynGk: string = "HoHam";
+  private t05deWeN: string = "bN";
 
-  private mwQoEbl(): number { return 0; };
+  @jsonName("hesdBS4I")
+  @jsonProperty(void 5, String, IZ5E4dM3)
+  public b6VC: string | IZ5E4dM3 = new IZ5E4dM3();
 
-  public i8nH(): number { return 0; };
+  @jsonName("ls0tXzbk")
+  @jsonProperty(Number, IZ5E4dM3, VkyEF)
+  private sJChqoU3g: number | IZ5E4dM3 | VkyEF = -77;
+
+  private wFUA(): string { return ""; };
+
+  public p2gs1V6hr(): number { return 0; };
+
+  private yVlrN81(): number { return 0; };
+
+  public paaU(): number { return 0; };
+
+  private ugd(): number { return 0; };
 
 }
 
 @jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
-export class EOyCwcWk extends Serializable {
-  @jsonName("l8lTg6uW99H")
-  @jsonProperty([YAKu])
-  private vAAM: [YAKu] = [new YAKu()];
+export class PfZX extends Serializable {
+  @jsonName("bUR")
+  @jsonProperty(OUoMQftGtgT, [ATgCbs35], [Number])
+  private o12ohul: OUoMQftGtgT | [ATgCbs35] | [number] = [-26];
 
-  @jsonName("oxC")
-  @jsonProperty(YAKu)
-  private s51z7s: YAKu = new YAKu();
+  @jsonName("i4YH4fvo")
+  @jsonProperty(ATgCbs35, [ATgCbs35], [Number])
+  public mitq344m: ATgCbs35 | [ATgCbs35] | [number] = new ATgCbs35();
 
-  @jsonName("gVo")
-  @jsonProperty([String], [YAKu], void -5)
-  private nP3dgG: [string] | [YAKu] = [new YAKu()];
+  @jsonName("dJ0aqwGLro")
+  @jsonProperty(Date, OUoMQftGtgT)
+  public sLs0XcN8O: Date | OUoMQftGtgT = new OUoMQftGtgT();
 
-  public e75yAclmx(): number { return 0; };
+  public ssP1NBu7s(): string { return ""; };
 
-  public zCi(): string { return ""; };
+  private vzKgxVq(): number { return 0; };
 
-  public y7x(): number { return 0; };
+  public zHButKFSU(): number { return 0; };
 
-  private kXKM(): string { return ""; };
-
-}
-
-@jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
-export class KL3V extends Serializable {
-  
-  @jsonProperty([YAKu])
-  private uKlrcGn: [YAKu] = [new YAKu()];
-
-  @jsonName("aqMmEwegv8t")
-  @jsonProperty([EOyCwcWk])
-  public oh6: [EOyCwcWk] = [new EOyCwcWk()];
-
-  @jsonName("dzAC")
-  @jsonProperty(void 74, [Date])
-  private tXH4L7C8nqS: [Date] = [new Date("2093-07-03 07:50:18 UTC")];
-
-  public ypWx(): number { return 0; };
-
-  private ricr8gn(): number { return 0; };
-
-  public dqvVF(): string { return ""; };
-
-}
-
-@jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
-export class P8taL7h extends Serializable {
-  @jsonName("hn8BTR")
-  @jsonProperty(Date, String, void -98)
-  public ccEnyi?: Date | string = void -98;
-
-  @jsonName("jCC0V")
-  @jsonProperty(Number, Date)
-  public bIzV1Zo: number | Date = -95;
-
-  @jsonName("bnHX4")
-  @jsonProperty([Number])
-  public urEtCFXD6Do: [number] = [82];
-
-  @jsonName("l3gxS0K7Eb")
-  @jsonProperty(void -19, Date, void 14)
-  public tr4kritvk?: Date = void 14;
-
-  
-  @jsonProperty(void 46)
-  public otXVab4?  = void 46;
-
-  public aWFk5(): string { return ""; };
-
-  private rkUyUTDaL(): number { return 0; };
-
-  private lFb(): number { return 0; };
-
-  public dLh7E(): number { return 0; };
+  private zxEn(): string { return ""; };
 
 }
 
 @jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
-export class HyTZaue extends Serializable {
-  @jsonName("heSc")
-  @jsonProperty([KL3V])
-  public jpROwUx3a: [KL3V] = [new KL3V()];
+export class Fsvk81L extends Serializable {
+  @jsonName("nDeg")
+  @jsonProperty(ATgCbs35)
+  public eFBN: ATgCbs35 = new ATgCbs35();
 
-  @jsonName("omr3")
-  @jsonProperty(void -48, void 29, KL3V)
-  public ax1KGq?: KL3V = void -48;
+  @jsonName("oLcNPhFOg")
+  @jsonProperty(FEu55QipQV)
+  private ep7H3bAeKa: FEu55QipQV = new FEu55QipQV();
 
-  @jsonName("uzgImOoyi")
-  @jsonProperty([YAKu], [Number])
-  public yP95c9: [YAKu] | [number] = [new YAKu()];
+  @jsonName("vPJZCUnbSk")
+  @jsonProperty(IZ5E4dM3)
+  public fkcZ7tIoDi: IZ5E4dM3 = new IZ5E4dM3();
 
-  @jsonName("lmnX3dGS")
-  @jsonProperty(String, [String], YAKu)
-  public uybU: string | [string] | YAKu = "vvD";
+  @jsonName("oNcxWHa4qF")
+  @jsonProperty(WMZkC6wllo)
+  private xk2: WMZkC6wllo = new WMZkC6wllo();
 
-  private gn6l(): string { return ""; };
+  @jsonName("zbhW")
+  @jsonProperty(XT2nvyPJiYs)
+  private dCnbbTlhlWa: XT2nvyPJiYs = new XT2nvyPJiYs();
 
-  private bIfPJBQ(): number { return 0; };
+  @jsonName("vNfDFx")
+  @jsonProperty(Hous)
+  public j19EdwbhH: Hous = new Hous();
 
-}
+  @jsonName("mthAEHRRQzm")
+  @jsonProperty(VkyEF)
+  public tJ3ZCDdvZ7: VkyEF = new VkyEF();
 
-@jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
-export class LORgNdqHq extends Serializable {
-  @jsonName("z0JxIz")
-  @jsonProperty([YAKu], [String])
-  public ihPc: [YAKu] | [string] = [new YAKu()];
+  @jsonName("mFFq5")
+  @jsonProperty(W9Gk)
+  private uw3vocgLez: W9Gk = new W9Gk();
 
-  @jsonName("rGKTToCvP")
-  @jsonProperty(String)
-  private a3zNePdE: string = "Ig5hWZrFdL";
+  @jsonName("bTz")
+  @jsonProperty(OUoMQftGtgT)
+  public zMlPeJMhY3: OUoMQftGtgT = new OUoMQftGtgT();
 
-  @jsonName("bFLcXr1meTD")
-  @jsonProperty(void 42, [YAKu])
-  public oTHDLC: [YAKu] = [new YAKu()];
+  @jsonName("gXI")
+  @jsonProperty(PfZX)
+  private n36ISEEn02R: PfZX = new PfZX();
 
-  @jsonName("vucJ7")
-  @jsonProperty(void 2)
-  public pxkyYOUk?  = void 2;
+  private oFwJQvx5uv(): string { return ""; };
 
-  private yYKbOG(): string { return ""; };
+  private zmoK(): string { return ""; };
 
-  private iZwE8vZSnq(): string { return ""; };
+  public qWLP0eHxUZU(): number { return 0; };
 
-  private rhPz2nHH(): number { return 0; };
-
-}
-
-@jsonObject({ namingStrategy: new KebabCaseNamingStrategy() })
-export class QCakg extends Serializable {
-  @jsonName("yuk642Bbqs")
-  @jsonProperty(Number, [P8taL7h])
-  private eQm6UDJ6: number | [P8taL7h] = [new P8taL7h()];
-
-  @jsonName("xtGf6Il20M")
-  @jsonProperty([P8taL7h], Date)
-  public t9ZP1i: [P8taL7h] | Date = new Date("2039-04-24 10:59:06 UTC");
-
-  @jsonName("dBFL8")
-  @jsonProperty([P8taL7h])
-  public w7Vat: [P8taL7h] = [new P8taL7h()];
-
-  
-  @jsonProperty(P8taL7h, void 54)
-  private gTtpMp: P8taL7h = new P8taL7h();
-
-  public ysaECch(): string { return ""; };
-
-  private wRSHtd1LUv(): string { return ""; };
-
-  public hkdfDGD2pky(): number { return 0; };
-
-}
-
-@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
-export class JnCIf8FT extends Serializable {
-  @jsonName("ia6J")
-  @jsonProperty([QCakg])
-  public byAx2rqQZ: [QCakg] = [new QCakg()];
-
-  @jsonName("q6t5")
-  @jsonProperty(void -40)
-  public rLBBJFUycoL?  = void -40;
-
-  @jsonName("ggzI5")
-  @jsonProperty(QCakg, [YAKu])
-  public xtg2: QCakg | [YAKu] = [new YAKu()];
-
-  private pMYcgu8(): string { return ""; };
-
-  public cEMiTN4Qt(): number { return 0; };
-
-  public tDQT51V(): number { return 0; };
-
-}
-
-@jsonObject({ namingStrategy: new SnakeCaseNamingStrategy() })
-export class PigcCsW extends Serializable {
-  @jsonName("gQpFg")
-  @jsonProperty([QCakg], [HyTZaue])
-  private dJIu83: [QCakg] | [HyTZaue] = [new HyTZaue()];
-
-  @jsonName("fpql")
-  @jsonProperty([String])
-  public nACsc: [string] = [""];
-
-  @jsonName("oJp0PZ")
-  @jsonProperty([EOyCwcWk])
-  private mqc1evXMo: [EOyCwcWk] = [new EOyCwcWk()];
-
-  public qEmT48I(): string { return ""; };
-
-  private usJDVX3IGzh(): string { return ""; };
-
-  private tyH(): string { return ""; };
-
-  public zXiincfR2zl(): number { return 0; };
-
-}
-
-@jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
-export class CBKWuYoHR extends Serializable {
-  @jsonName("lImYFM1g9p")
-  @jsonProperty(Number, LORgNdqHq)
-  public zfkozXflKr: number | LORgNdqHq = 16;
-
-  
-  @jsonProperty(P8taL7h, [QCakg], LORgNdqHq)
-  private x0m: P8taL7h | [QCakg] | LORgNdqHq = new P8taL7h();
-
-  @jsonName("eXvo")
-  @jsonProperty([QCakg], [Date])
-  public fRrnEau: [QCakg] | [Date] = [new Date("2058-05-13 14:04:34 UTC")];
-
-  public kDUKV(): number { return 0; };
-
-  private svt2LVFhTW(): string { return ""; };
-
-  private bshGn(): string { return ""; };
-
-  public jtWcLspzZ6i(): string { return ""; };
-
-}
-
-@jsonObject({ namingStrategy: new PascalCaseNamingStrategy() })
-export class SZdB extends Serializable {
-  @jsonName("unCb7u75A")
-  @jsonProperty(YAKu)
-  public gVWLyq5qOf: YAKu = new YAKu();
-
-  @jsonName("htZ")
-  @jsonProperty(EOyCwcWk)
-  private lA838Q: EOyCwcWk = new EOyCwcWk();
-
-  @jsonName("uKS1fOM4L")
-  @jsonProperty(KL3V)
-  private gLmpJbOzK: KL3V = new KL3V();
-
-  @jsonName("s2chAqliep")
-  @jsonProperty(P8taL7h)
-  public b2feAcTz: P8taL7h = new P8taL7h();
-
-  @jsonName("vx4AOFY")
-  @jsonProperty(HyTZaue)
-  public tAIzl: HyTZaue = new HyTZaue();
-
-  @jsonName("m4Sed8qD")
-  @jsonProperty(LORgNdqHq)
-  private vqsM8: LORgNdqHq = new LORgNdqHq();
-
-  @jsonName("wGvLzRKZU")
-  @jsonProperty(QCakg)
-  private dQ4z: QCakg = new QCakg();
-
-  @jsonName("cDeMvyz")
-  @jsonProperty(JnCIf8FT)
-  private kCddve: JnCIf8FT = new JnCIf8FT();
-
-  @jsonName("l3G")
-  @jsonProperty(PigcCsW)
-  public oqSV9BedPW2: PigcCsW = new PigcCsW();
-
-  @jsonName("vzt08f")
-  @jsonProperty(CBKWuYoHR)
-  public nfvan: CBKWuYoHR = new CBKWuYoHR();
-
-  private cdX4(): string { return ""; };
-
-  private cmzg(): number { return 0; };
-
-  public eagP2SWt(): string { return ""; };
+  public mcPQaXnfNe(): number { return 0; };
 
 }
 const toJSONMessage = "\n\nto JSON\n\n"
 console.log(toJSONMessage)
 
-const topToJSON = new SZdB().toJSON()
+const topToJSON = new Fsvk81L().toJSON()
 // console.log(topToJSON)
 
 const fname = "result.txt"
@@ -322,7 +344,7 @@ syncWriteFile(fname, topToJSON)
 const fromJSONMessage = "\n\nfrom JSON\n\n"
 console.log(fromJSONMessage)
 
-const topFromJSON = SZdB.fromJSON(topToJSON)
+const topFromJSON = Fsvk81L.fromJSON(topToJSON)
 
 // console.log(topFromJSON)
 
