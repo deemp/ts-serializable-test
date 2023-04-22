@@ -1,9 +1,9 @@
 module Main (main) where
 
-import Lib (someFunc)
+import qualified Test (main)
 
 main :: IO ()
-main = someFunc
+main = Test.main
 
 {- This code will be evaluated by ghcid
 -- $> putStrLn ("3" ++ "3")

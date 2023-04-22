@@ -1,23 +1,32 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ImplicitParams #-}
+{-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_GHC -fplugin Debug.Breakpoint #-}
 
-import Control.Lens (to, traversed, (^..))
+module Test where
+
+import AST
+import Control.Lens (filtered, isn't, to, traversed, (^.), (^..))
+import Control.Lens.Extras (is)
 import Control.Monad.IO.Class (liftIO)
+import Data.Generics.Labels ()
+import Data.Generics.Product ()
+import Data.Generics.Sum (_Ctor)
 import Data.List (intercalate)
-import Data.List.NonEmpty (NonEmpty, fromList, toList)
+import Data.List.NonEmpty (NonEmpty ((:|)), fromList, toList)
 import Data.String.Interpolate (__i'L)
 import Data.Time (UTCTime (..), secondsToDiffTime)
 import Data.Time.Calendar.OrdinalDate (pattern YearDay)
 import Hedgehog (Gen, Property, property, withTests)
-import Hedgehog.Gen (alphaNum, bool, choice, element, frequency, integral, lower, nonEmpty, sample, string, subsequence, upper)
+import Hedgehog.Gen (alphaNum, choice, element, frequency, integral, lower, nonEmpty, sample, string, subsequence, upper)
 import Hedgehog.Gen qualified as Gen
 import Hedgehog.Range (constant)
-import Lib
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.Hedgehog (testProperty)
 
@@ -32,7 +41,7 @@ _NAME_LENGTH_MAX :: Int
 _NAME_LENGTH_MAX = 10
 
 genManyName :: Gen String
-genManyName = string (constant 0 _NAME_LENGTH_MAX) alphaNum
+genManyName = string (constant 2 _NAME_LENGTH_MAX) alphaNum
 
 genCamelCaseName :: Gen String
 genCamelCaseName = (:) <$> lower <*> genManyName
@@ -62,7 +71,14 @@ genFieldModifier = element [MPublic, MPrivate]
 genJsonPropertyCompleteType :: (?classes :: [SomeClass]) => Gen JsonPropertyCompleteType
 genJsonPropertyCompleteType = do
   _jsonPropertyCompleteType_type <- genJsonPropertyElementaryType
-  _jsonPropertyCompleteType_typeModifier <- genTypeModifier
+  _jsonPropertyCompleteType_typeModifier <-
+    genTypeModifier
+      >>= ( \val ->
+              pure
+                if is (_Ctor @"PVoid") _jsonPropertyCompleteType_type
+                  then MSingle
+                  else val
+          )
   pure JsonPropertyCompleteType{..}
 
 allDifferent :: (Eq a) => [a] -> Bool
@@ -97,6 +113,8 @@ genNumber = integral (constant (-100) 100)
 genString :: Gen String
 genString = string (constant 0 10) alphaNum
 
+-- TODO void only with MSingle
+
 -- TODO mutate class from type
 -- TODO jsonProperty sets the type for field
 genClassFieldValue :: (?selectedTypes :: NonEmpty JsonPropertyCompleteType) => Gen ClassFieldCompleteValue
@@ -120,9 +138,10 @@ genClassFieldValue = do
 
 genClassFieldType :: (?selectedTypes :: NonEmpty JsonPropertyCompleteType) => ClassFieldType
 genClassFieldType =
-  ClassFieldType . fromList $
+  ClassFieldType $
     ?selectedTypes
       ^.. traversed
+        . filtered (\t -> isn't (_Ctor @"PVoid") (t ^. #_jsonPropertyCompleteType_type))
         . to
           ( \JsonPropertyCompleteType{..} ->
               let _classFieldCompleteType_modifier = _jsonPropertyCompleteType_typeModifier
@@ -137,16 +156,16 @@ genClassFieldType =
                in ClassFieldCompleteType{..}
           )
 
-genClassField :: (?classes :: [SomeClass]) => Gen ClassField
+genClassField :: (?genJsonProperty :: Gen JsonProperty) => Gen ClassField
 genClassField = do
   _classField_jsonName <- Gen.maybe genJsonName
-  _classField_jsonProperty <- genJsonProperty
+  _classField_jsonProperty <- ?genJsonProperty
   _classField_modifier <- genFieldModifier
   _classField_name <- ClassFieldName <$> genCamelCaseName
-  _classField_isOptional <- bool
   let ?selectedTypes = _classField_jsonProperty._jsonProperty._jsonPropertyType
   let _classField_type = genClassFieldType
   _classField_value <- genClassFieldValue
+  let _classField_isOptional = is (_Ctor @"VVoid") (_classField_value._classFieldCompleteValue_value)
   pure ClassField{..}
 
 -- TODO unique class field names
@@ -167,18 +186,16 @@ genNamingStrategy = element [SnakeCase, KebabCase, PascalCase]
 genJsonObject :: Gen JsonObject
 genJsonObject = JsonObject <$> genNamingStrategy
 
-genSomeClass :: (?classes :: [SomeClass]) => Gen SomeClass
+genSomeClass :: (?genJsonProperty :: Gen JsonProperty) => Gen SomeClass
 genSomeClass = do
   _someClass_jsonObject <- genJsonObject
   _someClass_name <- genClassName
-  _someClass_fields <-
-    nonEmpty (constant 2 5) genClassField
-  _someClass_methods <-
-    nonEmpty (constant 2 5) genClassMethod
+  _someClass_fields <- nonEmpty (constant 2 5) genClassField
+  _someClass_methods <- nonEmpty (constant 2 5) genClassMethod
   pure SomeClass{..}
 
-genClasses :: Int -> Gen [SomeClass] -> Gen [SomeClass]
-genClasses 0 cs = cs
+genClasses :: Int -> Gen [SomeClass] -> Gen (NonEmpty SomeClass)
+genClasses 0 cs = fromList . reverse <$> cs
 genClasses n cs =
   genClasses
     (n - 1)
@@ -186,19 +203,51 @@ genClasses n cs =
         cs1 <- cs
         cs2 <- subsequence cs1
         cs3 <-
-          let ?classes = cs2
+          let ?genJsonProperty = let { ?classes = cs2 } in genJsonProperty
            in genSomeClass
-        pure $ cs2 <> [cs3]
+        pure $ cs3 : cs1
     )
+
+genJsonPropertyForClass :: SomeClass -> JsonProperty
+genJsonPropertyForClass c =
+  JsonProperty
+    { _jsonProperty =
+        JsonPropertyType
+          { _jsonPropertyType =
+              JsonPropertyCompleteType
+                { _jsonPropertyCompleteType_type = PClass c
+                , _jsonPropertyCompleteType_typeModifier = MSingle
+                }
+                :| []
+          }
+    }
+
+genTopClass :: NonEmpty SomeClass -> Gen SomeClass
+genTopClass classes = do
+  fields <- traverse (\c -> let ?genJsonProperty = pure $ genJsonPropertyForClass c in genClassField) classes
+  someClass <-
+    let ?genJsonProperty = let { ?classes = [] } in genJsonProperty
+     in genSomeClass
+  pure someClass{_someClass_fields = fields}
 
 mkProperty :: Property
 mkProperty = withTests 1 $ property do
-  s <- sample (genClasses 10 (pure []))
+  classes <- sample (genClasses 10 (pure []))
+  topClass <- sample $ genTopClass classes
   liftIO $
-    writeFile "ts-serializable/index.ts" $
+    writeFile
+      "ts-serializable/index.ts"
       [__i'L|
-      import { jsonObject, jsonProperty, jsonName, Serializable, SnakeCaseNamingStrategy } from "ts-serializable";
-      #{"\n\n" <> intercalate "\n\n" (show <$> s)}
+      import { 
+        jsonObject, 
+        jsonProperty, 
+        jsonName, 
+        Serializable, 
+        SnakeCaseNamingStrategy,
+        KebabCaseNamingStrategy,
+        PascalCaseNamingStrategy
+      } from "ts-serializable";
+      #{"\n\n" <> intercalate "\n\n" (toList $ (show <$> (classes <> (topClass :| []))))}
       |]
 
 testTreeProperty :: TestTree

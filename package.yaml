@@ -40,9 +40,16 @@ library:
   source-dirs: src
   dependencies:
     - lens
+    - generic-lens
     - time
     - string-interpolate
     - data-default
+    - tasty-hunit
+    - tasty
+    - text
+    - hedgehog
+    - tasty-hedgehog
+    - breakpoint
 
 executables:
   nix-managed:
@@ -55,21 +62,12 @@ executables:
     dependencies:
       - nix-managed
 
-tests:
-  conversions:
-    main: Main.hs
-    source-dirs: test
-    dependencies:
-      - nix-managed
-      # - lima
-      - string-interpolate
-      - tasty-hunit
-      - tasty
-      - text
-      # - directory
-      - hedgehog
-      - tasty-hedgehog
-      # - pretty-simple
-      - breakpoint
-      - time
-      - lens
+# tests:
+#   conversions:
+#     main: Main.hs
+#     source-dirs: test
+#     dependencies:
+#       - nix-managed
+#       - lima
+#       - directory
+#       - pretty-simple
