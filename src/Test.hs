@@ -256,7 +256,7 @@ mkProperty = withTests 1 $ property do
       console.log(toJSONMessage)
 
       const topToJSON = new #{topClassName}().toJSON()
-      console.log(topToJSON)
+      // console.log(topToJSON)
 
       const fname = "result.txt"
 
@@ -270,11 +270,11 @@ mkProperty = withTests 1 $ property do
       syncWriteFile(fname, topToJSON)
 
       const fromJSONMessage = "\\n\\nfrom JSON\\n\\n"
+      console.log(fromJSONMessage)
 
       const topFromJSON = #{topClassName}.fromJSON(topToJSON)
 
-      console.log(fromJSONMessage)
-      console.log(topFromJSON)
+      // console.log(topFromJSON)
 
       syncWriteFile(fname, fromJSONMessage)
       syncWriteFile(fname, topFromJSON)
