@@ -1,8 +1,8 @@
 # `ts-serializable` test
 
-This project provides a generator of `TypeScript` classes with decorators from `ts-serializable`.
+This projects generates test cases for [ts-serializable](https://github.com/LabEG/Serializable) using [hedgehog](https://hackage.haskell.org/package/hedgehog) and a custom AST of TypeScript classes.
 
-- generated classes: [index.ts](./ts-serializable/index.ts).
+- generated classes: [index.ts](./ts-serializable/index.ts)
 - generated JSON: [result.json](./ts-serializable/result.json)
 
 ## Quick start
